@@ -1,0 +1,29 @@
+<h2>{{title}}</h2>
+<div class="container mt-2 col-md-6 float-start m-0 p-0">
+    <p>Note: Only 4 most recent activity display. Most recent at the top</p>
+    <!--    Display recent activity in table format-->
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Time (24 hr)</th>
+            <th scope="col">Page</th>
+            <th scope="col">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each activityList}}
+            <tr>
+                <th scope="row">{{this.date}}</th>
+                <td>{{this.time}}</td>
+                <td>{{this.page}}</td>
+                <td>{{this.action}}</td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+    {{#if isNoActivity}}
+        <p class="mt-3 m-1">No recent activity</p>
+    {{/if}}
+
+</div>

@@ -1,0 +1,43 @@
+<div class="container">
+    <h2 class="row justify-content-md-center">{{title}}</h2>
+
+    <!--    Username input-->
+    <div class="row justify-content-center">
+        <div class="w-25 mb-3">
+            <input type="text" name="userName" id="userNameID"
+                   placeholder="Username" class="form-control" value="">
+            <div class="invalid-feedback"></div>
+        </div>
+    </div>
+    <!--    Password input-->
+    <div class="row justify-content-center">
+        <div class="w-25 mb-3">
+            <input type="text" name="pwd" id="pwdID"
+                   placeholder="Password" class="form-control" value="">
+            <div class="invalid-feedback"></div>
+        </div>
+    </div>
+
+    <!--    Remember me checkbox-->
+    <div class="row justify-content-center">
+        <div class="w-25 mb-1">
+            <input type="checkbox" name="remember" id="rememberID" value="yes"
+                   class="form-check-input"
+                   {{#if submittedAgreed}}checked{{/if}}>
+            <label for="rememberID" class="form-check-label is-invalid">Remember me</label>
+
+            <p class="invalid-feedback"></p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="w-25">
+            <button type="submit" class="btn btn-warning rounded">Login</button>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="w-25">
+            <a class="button google" href="/login/with-google">Sign in with Google</a>
+        </div>
+    </div>
+</div>

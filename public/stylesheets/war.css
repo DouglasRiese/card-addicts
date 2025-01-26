@@ -1,0 +1,9 @@
+#computerCard {
+    width: 125px;
+    background-color: #00B7FF
+}
+
+#playerCard {
+    width: 125px;
+    background-color: red
+}
