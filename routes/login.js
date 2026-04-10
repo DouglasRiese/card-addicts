@@ -1,11 +1,12 @@
-var express = require('express');
+const express = require('express');
 const passport = require("passport");
 const passportGoogleOIDC = require("passport-google-oidc");
-var router = express.Router();
+const router = express.Router();
+const {infoStore} = require("../stores/global-vars");
 
 // Load .env variables
 require('dotenv').config();
-router.get('/', function (req, res, next) {
+router.get('/', function (req, res) {
     res.render('login', {
         title: 'Login'
     });
@@ -23,7 +24,7 @@ router.post('/logout', function (req, res, next) {
 passport.use(new passportGoogleOIDC({
         clientID: process.env['GOOGLE_CLIENT_ID'], // ensure .env variables are loaded with require('dotenv').config();
         clientSecret: process.env['GOOGLE_CLIENT_SECRET'],
-        callbackURL: 'http://localhost:3001/login/verified', // Must match what is set up in Google developer page
+        callbackURL: `${infoStore.frontEndURL}/login/verified`, // Must match what is set up in Google developer page
         scope: ['profile'],
     },
     function verify(issuer, profile, cb) {
@@ -66,7 +67,7 @@ router.get('/verified/', passport.authenticate('google', {
         failureRedirect: '/login',
         failureMessage: true
     }),
-    function (req, res, next) {
+    function (req, res) {
         console.log('\ngoing to /login/verified\n')
         console.log('user: ' + req.user)
         console.log('session: ' + req.session)

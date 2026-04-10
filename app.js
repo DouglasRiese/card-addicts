@@ -1,19 +1,20 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
-var indexRouter = require('./routes/home');
-var warRouter = require('./routes/war');
-var surveyRouter = require('./routes/survey');
-var avatarRouter = require('./routes/avatar');
-var loginRouter = require('./routes/login');
-var recentActivityRouter = require('./routes/recent-activity');
+const indexRouter = require('./routes/home');
+const warRouter = require('./routes/war');
+const surveyRouter = require('./routes/survey');
+const avatarRouter = require('./routes/avatar');
+const loginRouter = require('./routes/login');
+const recentActivityRouter = require('./routes/recent-activity');
 
 
-var session = require('express-session')
+const session = require('express-session')
 const passport = require("passport");
+const {infoStore} = require("./stores/global-vars");
 
 
 const sessOptions = {
@@ -25,7 +26,7 @@ const sessOptions = {
     unset: 'destroy',
 }
 
-var app = express();
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -148,7 +149,7 @@ app.use((req, res, next) => {
 });
 
 // error handler
-app.use(function (err, req, res, next) {
+app.use(function (err, req, res) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -158,6 +159,6 @@ app.use(function (err, req, res, next) {
     res.render('error');
 });
 
-console.log('http://localhost:3001');
+console.log(`${infoStore.frontEndURL}`);
 
 module.exports = app;

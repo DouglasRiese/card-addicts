@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
 // Import the action type
 const activityTracking = require('../utils/activity-tracking')
@@ -60,7 +60,7 @@ let selectedAvatar = {
 router.selectedAvatar = selectedAvatar
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
+router.get('/', function (req, res) {
 
 
     checkAuthentication(req, res)
@@ -71,7 +71,7 @@ router.get('/', function (req, res, next) {
     // If the user is changing the avatar
     if (selectedAvatarId) {
         // Search in the list for the selected avatar id
-        selectedAvatar = avatarsList.find(a => a.id == selectedAvatarId);
+        selectedAvatar = avatarsList.find(a => a.id === selectedAvatarId);
 
         // add action to recent activity
         activityTracking.addItemToActivities(req, '/avatar', activityTracking.actionTypes.CHANGED_AVATAR, selectedAvatar.name)
@@ -80,10 +80,10 @@ router.get('/', function (req, res, next) {
     // Check if the items need to be sorted
     const sort = req.query.sort;
     if (sort) {
-        if (sort == 'ascending') {
+        if (sort === 'ascending') {
             // sort the items ascending
             avatarsList.sort((a, b) => a.name.localeCompare(b.name));
-        } else if (sort == 'descending') {
+        } else if (sort === 'descending') {
             // sort the items descending
             avatarsList.sort((a, b) => b.name.localeCompare(a.name));
         } else {

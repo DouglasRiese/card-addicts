@@ -1,6 +1,6 @@
-var express = require('express');
+const express = require('express');
 const {checkAuthentication} = require("../utils/passport-validation");
-var router = express.Router();
+const router = express.Router();
 
 
 // Info for the featured game
@@ -32,7 +32,7 @@ const gamesList = [
 
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
+router.get('/', function (req, res) {
     checkAuthentication(req, res)
 
     res.render('home', {

@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const activityTracking = require('../utils/activity-tracking')
 
 // -----Setup for multer file upload-----
@@ -136,13 +136,7 @@ router.post('/',
 
             for (const i in gameChoices) {
                 // if same as selected game add the property
-                if (gameChoices[i].name === selectedGame) {
-                    gameChoices[i].isSelected = true
-                }
-                // remove selected property if user changes their mind
-                else {
-                    gameChoices[i].isSelected = false
-                }
+                gameChoices[i].isSelected = gameChoices[i].name === selectedGame;
             }
 
             // Render repopulating the form with the old data, and error messages

@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const activityTracking = require('../utils/activity-tracking')
 const {checkAuthentication} = require("../utils/passport-validation");
 
@@ -7,7 +7,7 @@ let activityLastFour = []
 let isNoActivity = true
 
 /* GET recent-activity page. */
-router.get('/', function (req, res, next) {
+router.get('/', function (req, res) {
     checkAuthentication(req, res)
 
     if (req.session[activityTracking.activityCategoryName]) {

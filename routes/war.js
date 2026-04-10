@@ -1,7 +1,8 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const activityTracking = require('../utils/activity-tracking')
 const {checkAuthentication} = require("../utils/passport-validation");
+const {infoStore} = require("../stores/global-vars");
 
 let draw;
 let startGame;
@@ -33,7 +34,7 @@ let numberOfDecks = [
 
 
 /* POST war page. */
-router.post('/', function (req, res, next) {
+router.post('/', function (req, res) {
     checkAuthentication(req, res)
 
     gameNotOver = true
@@ -63,7 +64,7 @@ router.post('/', function (req, res, next) {
 })
 
 /* GET war page. */
-router.get('/', function (req, res, next) {
+router.get('/', function (req, res) {
     checkAuthentication(req, res)
     
     draw = req.query.draw;
@@ -97,7 +98,7 @@ router.get('/', function (req, res, next) {
  * @returns {Promise<void>}
  */
 const getJsonData = async () => {
-    const res = await fetch('https://deckofcardsapi.com/api/deck/new/draw/?count=0');
+    const res = await fetch(`${infoStore.backEndURL}/api/deck/new/draw/?count=0`);
     if (res.ok) {
         data = await res.json();
         deckID = data.deck_id;
@@ -111,7 +112,7 @@ const getJsonData = async () => {
  */
 const drawCard = async () => {
     // I draw the cards 2 at a time, and hand 1 to the computer and the player
-    const res = await fetch(`https://deckofcardsapi.com/api/deck/${deckID}/draw/?count=2`)
+    const res = await fetch(`${infoStore.backEndURL}/api/deck/${deckID}/draw/?count=2`)
     if (res.ok) {
         data = await res.json();
 
@@ -187,20 +188,12 @@ function setChoicesFromCookie(req) {
     if (req.cookies.rememberChoices) {
         // Set which victory condition is selected by default
         for (let i in victoryConditions) {
-            if (victoryConditions[i].name == req.cookies.rememberChoices.victoryConditions) {
-                victoryConditions[i].isSelected = true;
-            } else {
-                victoryConditions[i].isSelected = false;
-            }
+            victoryConditions[i].isSelected = victoryConditions[i].name === req.cookies.rememberChoices.victoryConditions;
         }
 
         // Set which number of decks is selected by default
         for (let i in numberOfDecks) {
-            if (numberOfDecks[i].name == req.cookies.rememberChoices.numberOfDecks) {
-                numberOfDecks[i].isSelected = true;
-            } else {
-                numberOfDecks[i].isSelected = false;
-            }
+            numberOfDecks[i].isSelected = numberOfDecks[i].name === req.cookies.rememberChoices.numberOfDecks;
         }
     }
 }
