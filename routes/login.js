@@ -71,7 +71,7 @@ router.get('/verified/', passport.authenticate('google', {
         console.log('\ngoing to /login/verified\n')
         console.log('user: ' + req.user)
         console.log('session: ' + req.session)
-        for (item in req.session) {
+        for (let item in req.session) {
             console.log(req.session[item]);
         }
         console.log('is auth: ' + req.isAuthenticated);

@@ -153,6 +153,7 @@ function isGameOver(req) {
 
 /**
  * function for rendering the page to reduce the number of lines of code.
+ * @param req
  * @param res
  */
 function renderPage(req, res) {
