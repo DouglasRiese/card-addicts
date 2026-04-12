@@ -1,0 +1,16 @@
+{
+	"name": "card-addicts-home",
+	"main": "src/worker.js",
+	"compatibility_date": "2026-04-11",
+	"assets": {
+		"directory": "./public",
+		"binding": "ASSETS"
+	},
+	"d1_databases": [
+		{
+			"binding": "card_addicts_db",
+			"database_name": "card-addicts-db",
+			"database_id": "31156e0b-5463-4772-89fc-c7e2f466f1eb"
+		}
+	]
+}
