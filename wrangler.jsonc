@@ -22,6 +22,12 @@
       "database_id": "31156e0b-5463-4772-89fc-c7e2f466f1eb"
     }
   ],
+  "r2_buckets": [
+    {
+      "binding": "AVATAR_BUCKET",
+      "bucket_name": "card-addicts-avatars"
+    }
+  ],
   "vars": {
     "GOOGLE_CLIENT_ID": "809111617751-f35jraq7t2p8vhn56si532go4h6evoie.apps.googleusercontent.com"
   }

@@ -1,0 +1,19 @@
+.card img {
+    object-fit: cover;
+}
+
+.card-title,
+.card-body span {
+    font-weight: 600;
+}
+
+.home-avatar-card {
+    border-radius: 0.75rem;
+}
+
+.home-avatar-image {
+    width: 180px;
+    max-width: 100%;
+    border-radius: 1rem;
+    object-fit: cover;
+}

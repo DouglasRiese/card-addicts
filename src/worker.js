@@ -8,7 +8,7 @@ export default {
         const url = new URL(request.url);
 
         if (url.pathname === "/") {
-            return env.ASSETS.fetch(new Request(new URL("/index.html", request.url), request));
+            return env.ASSETS.fetch(new Request(new URL("/home.html", request.url), request));
         }
 
         if (url.pathname === "/api/signup" && request.method === "POST") {
@@ -49,6 +49,22 @@ export default {
 
         if (url.pathname === "/api/war/reset" && request.method === "POST") {
             return handleWarReset(request, env);
+        }
+
+        if (url.pathname === "/api/avatar" && request.method === "GET") {
+            return handleGetAvatars(request, env);
+        }
+
+        if (url.pathname === "/api/avatar/upload" && request.method === "POST") {
+            return handleUploadAvatar(request, env);
+        }
+
+        if (url.pathname === "/api/avatar/select" && request.method === "POST") {
+            return handleSelectAvatar(request, env);
+        }
+
+        if (url.pathname.startsWith("/api/avatar/file/") && request.method === "GET") {
+            return handleGetAvatarFile(request, env, url);
         }
 
         return env.ASSETS.fetch(request);
@@ -269,6 +285,169 @@ async function handleGetSurveySubmissions(request, env, url) {
         console.error("Fetching submissions failed:", error);
         return jsonResponse({error: "Could not fetch survey submissions."}, 500);
     }
+}
+
+async function handleGetAvatars(request, env) {
+    const session = await getSessionFromRequest(request, env.SESSION_SECRET);
+    if (!session) {
+        return jsonResponse({error: "You must be logged in."}, 401);
+    }
+
+    try {
+        const avatarsResult = await env.DB
+            .prepare(`
+                SELECT id, user_id, name, storage_key, image_url, is_default
+                FROM avatars
+                WHERE is_default = 1
+                   OR user_id = ?
+                ORDER BY is_default DESC, id ASC
+            `)
+            .bind(session.userId)
+            .all();
+
+        const user = await env.DB
+            .prepare("SELECT selected_avatar_id FROM users WHERE id = ?")
+            .bind(session.userId)
+            .first();
+
+        return jsonResponse({
+            success: true,
+            avatars: avatarsResult.results ?? [],
+            selectedAvatarId: user?.selected_avatar_id ?? 1
+        });
+    } catch (error) {
+        console.error("Loading avatars failed:", error);
+        return jsonResponse({error: "Could not load avatars."}, 500);
+    }
+}
+
+async function handleUploadAvatar(request, env) {
+    const session = await getSessionFromRequest(request, env.SESSION_SECRET);
+    if (!session) {
+        return jsonResponse({error: "You must be logged in."}, 401);
+    }
+
+    try {
+        const formData = await request.formData();
+        const file = formData.get("customAvatarImage");
+
+        if (!(file instanceof File)) {
+            return jsonResponse({error: "No file chosen."}, 400);
+        }
+
+        if (!file.type.startsWith("image/")) {
+            return jsonResponse({error: "Only image files are allowed."}, 400);
+        }
+
+        const twoMb = 2 * 1024 * 1024;
+        if (file.size > twoMb) {
+            return jsonResponse({error: "File must be less than 2MB."}, 400);
+        }
+
+        const safeName = sanitizeFilename(file.name);
+        const objectKey = `user-${session.userId}/${crypto.randomUUID()}-${safeName}`;
+
+        await env.AVATAR_BUCKET.put(objectKey, file.stream(), {
+            httpMetadata: {
+                contentType: file.type
+            }
+        });
+
+        const imageUrl = `/api/avatar/file/${encodeURIComponent(objectKey)}`;
+
+        const result = await env.DB
+            .prepare(`
+                INSERT INTO avatars (user_id, name, storage_key, image_url, is_default)
+                VALUES (?, ?, ?, ?, 0)
+            `)
+            .bind(session.userId, file.name, objectKey, imageUrl)
+            .run();
+
+        const avatarId = result.meta?.last_row_id ?? null;
+
+        await env.DB
+            .prepare("UPDATE users SET selected_avatar_id = ? WHERE id = ?")
+            .bind(avatarId, session.userId)
+            .run();
+
+        return jsonResponse({
+            success: true,
+            avatarId,
+            imageUrl
+        });
+    } catch (error) {
+        console.error("Uploading avatar failed:", error);
+        return jsonResponse({error: "Could not upload avatar."}, 500);
+    }
+}
+
+async function handleSelectAvatar(request, env) {
+    const session = await getSessionFromRequest(request, env.SESSION_SECRET);
+    if (!session) {
+        return jsonResponse({error: "You must be logged in."}, 401);
+    }
+
+    try {
+        const body = await request.json();
+        const avatarId = Number(body.avatarId);
+
+        if (!Number.isInteger(avatarId)) {
+            return jsonResponse({error: "Invalid avatar id."}, 400);
+        }
+
+        const avatar = await env.DB
+            .prepare(`
+                SELECT id, user_id, is_default
+                FROM avatars
+                WHERE id = ?
+            `)
+            .bind(avatarId)
+            .first();
+
+        if (!avatar) {
+            return jsonResponse({error: "Avatar not found."}, 404);
+        }
+
+        if (!(avatar.is_default === 1 || avatar.user_id === session.userId)) {
+            return jsonResponse({error: "You cannot select this avatar."}, 403);
+        }
+
+        await env.DB
+            .prepare("UPDATE users SET selected_avatar_id = ? WHERE id = ?")
+            .bind(avatarId, session.userId)
+            .run();
+
+        return jsonResponse({success: true});
+    } catch (error) {
+        console.error("Selecting avatar failed:", error);
+        return jsonResponse({error: "Could not select avatar."}, 500);
+    }
+}
+
+async function handleGetAvatarFile(request, env, url) {
+    const session = await getSessionFromRequest(request, env.SESSION_SECRET);
+    if (!session) {
+        return new Response("Unauthorized", {status: 401});
+    }
+
+    const key = decodeURIComponent(url.pathname.replace("/api/avatar/file/", ""));
+    if (!key) {
+        return new Response("Not found", {status: 404});
+    }
+
+    const object = await env.AVATAR_BUCKET.get(key);
+    if (!object) {
+        return new Response("Not found", {status: 404});
+    }
+
+    const headers = new Headers();
+    object.writeHttpMetadata(headers);
+    headers.set("etag", object.httpEtag);
+    return new Response(object.body, {headers});
+}
+
+function sanitizeFilename(filename) {
+    return filename.replace(/[^a-zA-Z0-9._-]/g, "_");
 }
 
 async function handleWarState(request, env) {

@@ -1,0 +1,17 @@
+.avatar-large {
+    width: 220px;
+    max-width: 100%;
+    border-radius: 1rem;
+    object-fit: cover;
+}
+
+.avatar-thumb {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 0.75rem;
+}
+
+.avatar-card.selected {
+    outline: 3px solid #78c2ad;
+}
