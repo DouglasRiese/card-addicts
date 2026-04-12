@@ -1,22 +1,23 @@
 <!DOCTYPE html>
 <html lang="en-US">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Card Addicts</title>
 
-    <link rel="stylesheet" href="/styles/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.3/minty/bootstrap.min.css"
           integrity="sha512-+/uDiVv4ZLhHnXToJFPwYK08kkG2et1rSuiitOl+0hdzmx2N6HQaMqm/7ORzr8dhco+cyGZCRxkXU7EMMYOLfQ=="
-          crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="/styles/home.css" />
-    <link rel="icon" href="/images/icons/playing_cards.png" />
+    crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet" href="/styles/style.css"/>
+    <link rel="stylesheet" href="/styles/home.css"/>
+    <link rel="icon" href="/images/icons/playing_cards.png"/>
+    <link rel="stylesheet" href="/styles/navbar.css"/>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light rounded-3">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/">
-            <img src="/images/icons/playing_cards.png" height="50" alt="Card Addicts icon" />
+        <a class="navbar-brand" href="/public">
+            <img src="/images/icons/playing_cards.png" height="50" alt="Card Addicts icon"/>
             Card Addicts
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -25,11 +26,12 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-item nav-link active" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-item nav-link active" href="/home.html">Home</a></li>
                 <li class="nav-item"><a class="nav-item nav-link" href="/survey.html">Survey</a></li>
                 <li class="nav-item"><a class="nav-item nav-link" href="/avatar.html">Avatar</a></li>
                 <li class="nav-item"><a class="nav-item nav-link" href="/recent-activity.html">Recent Activity</a></li>
                 <li class="nav-item"><a class="nav-item nav-link" href="/login.html">Login</a></li>
+                <li class="nav-item d-flex align-items-center ms-lg-3" id="navAuthSlot"></li>
             </ul>
         </div>
     </div>
@@ -98,7 +100,7 @@
         </div>
     </section>
 </main>
-
+<script src="/scripts/navbar.js"></script>
 <script src="/scripts/home.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"

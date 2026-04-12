@@ -21,3 +21,7 @@ a {
     width: 200px;
     height: 200px;
 }
+
+.alert .alert-link, .alert a {
+    color: #000000;
+}

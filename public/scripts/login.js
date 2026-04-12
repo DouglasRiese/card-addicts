@@ -4,7 +4,6 @@ const authSuccess = document.getElementById("authSuccess");
 
 const signupForm = document.getElementById("signupForm");
 const loginForm = document.getElementById("loginForm");
-const logoutButton = document.getElementById("logoutButton");
 
 document.addEventListener("DOMContentLoaded", () => {
     loadCurrentUser();
@@ -13,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 signupForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     clearMessages();
-    clearFormErrors(signupForm, ["signupEmail", "signupPassword"]);
+    clearFormErrors(["signupEmail", "signupPassword"]);
 
     const email = document.getElementById("signupEmail").value.trim();
     const password = document.getElementById("signupPassword").value;
@@ -55,7 +54,7 @@ signupForm.addEventListener("submit", async (event) => {
 loginForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     clearMessages();
-    clearFormErrors(loginForm, ["loginEmail", "loginPassword"]);
+    clearFormErrors(["loginEmail", "loginPassword"]);
 
     const email = document.getElementById("loginEmail").value.trim();
     const password = document.getElementById("loginPassword").value;
@@ -91,26 +90,6 @@ loginForm.addEventListener("submit", async (event) => {
         await loadCurrentUser();
     } catch {
         showError("Could not log in.");
-    }
-});
-
-logoutButton.addEventListener("click", async () => {
-    clearMessages();
-
-    try {
-        const response = await fetch("/api/logout", {
-            method: "POST"
-        });
-
-        if (!response.ok) {
-            showError("Could not log out.");
-            return;
-        }
-
-        showSuccess("Logged out.");
-        await loadCurrentUser();
-    } catch {
-        showError("Could not log out.");
     }
 });
 
@@ -175,7 +154,7 @@ function setFieldError(fieldId, message) {
     }
 }
 
-function clearFormErrors(form, fieldIds) {
+function clearFormErrors(fieldIds) {
     for (const fieldId of fieldIds) {
         const input = document.getElementById(fieldId);
         const feedback = document.getElementById(`${fieldId}Error`);
