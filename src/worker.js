@@ -67,6 +67,10 @@ export default {
             return handleGetAvatarFile(request, env, url);
         }
 
+        if (url.pathname === "/api/recent-activity" && request.method === "GET") {
+            return handleGetRecentActivity(request, env);
+        }
+
         return env.ASSETS.fetch(request);
     }
 };
@@ -235,6 +239,13 @@ async function handleSurveySubmission(request, env) {
             )
             .run();
 
+        await logActivity(
+            env,
+            session.userId,
+            "/survey",
+            "Submitted Feedback Survey"
+        );
+
         return jsonResponse({
             success: true,
             message: "Survey submitted successfully.",
@@ -370,6 +381,13 @@ async function handleUploadAvatar(request, env) {
             .bind(avatarId, session.userId)
             .run();
 
+        await logActivity(
+            env,
+            session.userId,
+            "/avatar",
+            `Uploaded avatar of image "${file.name}"`
+        );
+
         return jsonResponse({
             success: true,
             avatarId,
@@ -417,6 +435,18 @@ async function handleSelectAvatar(request, env) {
             .bind(avatarId, session.userId)
             .run();
 
+        const avatarName = await env.DB
+            .prepare("SELECT name FROM avatars WHERE id = ?")
+            .bind(avatarId)
+            .first();
+
+        await logActivity(
+            env,
+            session.userId,
+            "/avatar",
+            `Changed avatar to image "${avatarName?.name ?? "Unknown"}"`
+        );
+
         return jsonResponse({success: true});
     } catch (error) {
         console.error("Selecting avatar failed:", error);
@@ -444,6 +474,62 @@ async function handleGetAvatarFile(request, env, url) {
     object.writeHttpMetadata(headers);
     headers.set("etag", object.httpEtag);
     return new Response(object.body, {headers});
+}
+
+async function handleGetRecentActivity(request, env) {
+    const session = await getSessionFromRequest(request, env.SESSION_SECRET);
+    if (!session) {
+        return jsonResponse({error: "You must be logged in."}, 401);
+    }
+
+    try {
+        const result = await env.DB
+            .prepare(`
+                SELECT id,
+                       page, action, created_at
+                FROM activity_log
+                WHERE user_id = ?
+                ORDER BY id DESC
+                    LIMIT 4
+            `)
+            .bind(session.userId)
+            .all();
+
+        const activities = (result.results ?? []).map((row) => {
+            const [datePart, timePartRaw = ""] = String(row.created_at || "").split(" ");
+            const timePart = timePartRaw.split(".")[0];
+
+            return {
+                id: row.id,
+                date: datePart || "",
+                time: timePart || "",
+                page: row.page,
+                action: row.action
+            };
+        });
+
+        return jsonResponse({
+            success: true,
+            activities
+        });
+    } catch (error) {
+        console.error("Loading recent activity failed:", error);
+        return jsonResponse({error: "Could not load recent activity."}, 500);
+    }
+}
+
+async function logActivity(env, userId, page, action) {
+    try {
+        await env.DB
+            .prepare(`
+                INSERT INTO activity_log (user_id, page, action)
+                VALUES (?, ?, ?)
+            `)
+            .bind(userId, page, action)
+            .run();
+    } catch (error) {
+        console.error("Failed to log activity:", error);
+    }
 }
 
 function sanitizeFilename(filename) {
@@ -494,6 +580,13 @@ async function handleWarStart(request, env) {
         };
 
         const cookie = await createWarCookie(state, env.SESSION_SECRET);
+
+        await logActivity(
+            env,
+            session.userId,
+            "/war",
+            "Started game of war"
+        );
 
         return jsonResponse(
             {success: true, state},
@@ -565,9 +658,21 @@ async function handleWarDraw(request, env) {
         if (state.playerCapturesCount >= state.victoryCondition) {
             state.result = "Player has won the game!";
             state.gameOver = true;
+            await logActivity(
+                env,
+                session.userId,
+                "/war",
+                "Won game of war!"
+            );
         } else if (state.computerCapturesCount >= state.victoryCondition) {
             state.result = "Computer has won the game!";
             state.gameOver = true;
+            await logActivity(
+                env,
+                session.userId,
+                "/war",
+                "Lost game of war"
+            );
         } else if (state.cardsRemaining <= 0) {
             state.result = "No cards remain. Game over.";
             state.gameOver = true;

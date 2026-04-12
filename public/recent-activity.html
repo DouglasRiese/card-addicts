@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Avatar - Card Addicts</title>
+    <title>Recent Activity - Card Addicts</title>
 
     <link rel="stylesheet" href="/styles/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.3/minty/bootstrap.min.css"
           integrity="sha512-+/uDiVv4ZLhHnXToJFPwYK08kkG2et1rSuiitOl+0hdzmx2N6HQaMqm/7ORzr8dhco+cyGZCRxkXU7EMMYOLfQ=="
           crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="/styles/avatar.css" />
     <link rel="icon" href="/images/icons/playing_cards.png" />
 </head>
 <body>
@@ -27,8 +26,8 @@
             <ul class="navbar-nav">
                 <li class="nav-item"><a class="nav-item nav-link" href="/">Home</a></li>
                 <li class="nav-item"><a class="nav-item nav-link" href="/survey.html">Survey</a></li>
-                <li class="nav-item"><a class="nav-item nav-link active" href="/avatar.html">Avatar</a></li>
-                <li class="nav-item"><a class="nav-item nav-link" href="/recent-activity.html">Recent Activity</a></li>
+                <li class="nav-item"><a class="nav-item nav-link" href="/avatar.html">Avatar</a></li>
+                <li class="nav-item"><a class="nav-item nav-link active" href="/recent-activity.html">Recent Activity</a></li>
                 <li class="nav-item"><a class="nav-item nav-link" href="/login.html">Login</a></li>
             </ul>
         </div>
@@ -36,49 +35,38 @@
 </nav>
 
 <main class="container py-4">
-    <h2>Avatar</h2>
+    <h2>Recent Activity</h2>
 
     <div id="authRequiredMessage" class="alert alert-warning d-none">
-        You must be logged in to manage your avatar.
+        You must be logged in to view recent activity.
         <a href="/login.html" class="alert-link">Go to login/signup</a>
     </div>
 
     <div id="currentUserMessage" class="alert alert-info d-none"></div>
-    <div id="avatarErrorMessage" class="alert alert-danger d-none"></div>
-    <div id="avatarSuccessMessage" class="alert alert-success d-none"></div>
+    <div id="activityErrorMessage" class="alert alert-danger d-none"></div>
 
-    <div id="avatarApp" class="d-none">
-        <div class="row g-4">
-            <div class="col-lg-4">
-                <div class="card shadow-sm p-3">
-                    <h4>Selected Avatar</h4>
-                    <img id="selectedAvatarImage" class="avatar-large mb-3" alt="Selected avatar" src="">
-                    <div id="selectedAvatarName" class="fw-semibold"></div>
+    <p class="mb-3">Only the 4 most recent activities are shown. Most recent at the top.</p>
 
-                    <hr>
+    <div id="noActivityMessage" class="alert alert-secondary d-none">
+        No recent activity.
+    </div>
 
-                    <form id="avatarUploadForm">
-                        <div class="mb-3">
-                            <label for="customAvatarImage" class="form-label">Upload Avatar Image</label>
-                            <input type="file" id="customAvatarImage" name="customAvatarImage" class="form-control" accept="image/*">
-                            <div class="form-text">Max 2 MB. Images only.</div>
-                        </div>
-                        <button type="submit" class="btn btn-warning">Upload File</button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="col-lg-8">
-                <div class="card shadow-sm p-3">
-                    <h4>Available Avatars</h4>
-                    <div id="avatarGrid" class="row g-3 mt-1"></div>
-                </div>
-            </div>
-        </div>
+    <div class="table-responsive">
+        <table class="table d-none" id="activityTable">
+            <thead>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Time</th>
+                <th scope="col">Page</th>
+                <th scope="col">Action</th>
+            </tr>
+            </thead>
+            <tbody id="activityTableBody"></tbody>
+        </table>
     </div>
 </main>
 
-<script src="/scripts/avatar.js"></script>
+<script src="/scripts/recent-activity.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
