@@ -7,3 +7,12 @@
     width: 125px;
     background-color: red
 }
+
+.war-card {
+    width: 160px;
+    max-width: 100%;
+}
+
+.card {
+    border-radius: 0.75rem;
+}

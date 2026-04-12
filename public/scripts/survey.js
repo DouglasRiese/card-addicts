@@ -4,9 +4,18 @@ const serverErrorMessage = document.getElementById("serverErrorMessage");
 const submitButton = document.getElementById("submitButton");
 const ratingInput = document.getElementById("ratingID");
 const ratingValue = document.getElementById("ratingValue");
+const authRequiredMessage = document.getElementById("authRequiredMessage");
+const currentUserMessage = document.getElementById("currentUserMessage");
 
 const allowedGameChoices = ["War 2", "Solitaire", "Blackjack", "None"];
 const feedbackRegex = /^[a-zA-Z0-9 !.,\r\n\t'-]+$/;
+
+let isAuthenticated = false;
+
+document.addEventListener("DOMContentLoaded", async () => {
+    ratingValue.textContent = ratingInput.value;
+    await loadCurrentUser();
+});
 
 ratingInput.addEventListener("input", () => {
     ratingValue.textContent = ratingInput.value;
@@ -15,6 +24,11 @@ ratingInput.addEventListener("input", () => {
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
     clearErrors();
+
+    if (!isAuthenticated) {
+        showServerError("You must be logged in to submit the survey.");
+        return;
+    }
 
     const formData = new FormData(form);
     const payload = {
@@ -60,14 +74,39 @@ form.addEventListener("submit", async (event) => {
         ratingInput.value = "5";
         ratingValue.textContent = "5";
         successMessage.classList.remove("d-none");
-    } catch (error) {
+        submitButton.disabled = false;
+    } catch {
         showServerError("Could not submit the survey. Please try again.");
-    } finally {
         submitButton.disabled = false;
     }
 });
 
-// Client-side validation
+async function loadCurrentUser() {
+    try {
+        const response = await fetch("/api/me");
+        const result = await response.json();
+
+        if (result.authenticated) {
+            isAuthenticated = true;
+            submitButton.disabled = false;
+            authRequiredMessage.classList.add("d-none");
+            currentUserMessage.classList.remove("d-none");
+            currentUserMessage.textContent = `Logged in as ${result.user.email}`;
+            return;
+        }
+
+        isAuthenticated = false;
+        submitButton.disabled = true;
+        currentUserMessage.classList.add("d-none");
+        authRequiredMessage.classList.remove("d-none");
+    } catch {
+        isAuthenticated = false;
+        submitButton.disabled = true;
+        currentUserMessage.classList.add("d-none");
+        authRequiredMessage.classList.remove("d-none");
+    }
+}
+
 function validateSurvey(payload) {
     const errors = {};
 

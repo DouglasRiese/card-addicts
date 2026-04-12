@@ -29,7 +29,7 @@
                 <li class="nav-item"><a class="nav-item nav-link active" href="/survey.html">Survey</a></li>
                 <li class="nav-item"><a class="nav-item nav-link disabled" href="#">Avatar</a></li>
                 <li class="nav-item"><a class="nav-item nav-link disabled" href="#">Recent Activity</a></li>
-                <li class="nav-item"><a class="nav-item nav-link disabled" href="#">Login</a></li>
+                <li class="nav-item"><a class="nav-item nav-link" href="/login.html">Login</a></li>
             </ul>
         </div>
     </div>
@@ -37,6 +37,13 @@
 
 <main class="container py-4">
     <h2>Survey</h2>
+
+    <div id="authRequiredMessage" class="alert alert-warning d-none">
+        You must be logged in to submit the survey.
+        <a href="/login.html" class="alert-link">Go to login/signup</a>
+    </div>
+
+    <div id="currentUserMessage" class="alert alert-info d-none"></div>
 
     <div id="successMessage" class="alert alert-success d-none" role="alert">
         Your survey has been submitted!
@@ -47,26 +54,14 @@
     <form id="surveyForm" class="col-md-6" novalidate>
         <div class="mb-3">
             <label for="emailID" class="form-label">Email (optional)</label>
-            <input
-                    type="email"
-                    name="email"
-                    id="emailID"
-                    placeholder="example@mail.com"
-                    class="form-control"
-            />
+            <input type="email" name="email" id="emailID" placeholder="example@mail.com" class="form-control"/>
             <div class="invalid-feedback" id="emailError"></div>
         </div>
 
         <div class="mb-3">
             <label for="feedbackID" class="form-label">How do you like our website?</label>
-            <textarea
-                    name="feedback"
-                    id="feedbackID"
-                    rows="8"
-                    minlength="10"
-                    maxlength="600"
-                    class="form-control"
-            ></textarea>
+            <textarea name="feedback" id="feedbackID" rows="8" minlength="10" maxlength="600" class="form-control">
+            </textarea>
             <div class="invalid-feedback" id="feedbackError"></div>
         </div>
 
@@ -75,16 +70,7 @@
             <div>
                 <span class="float-end">Absolutely!</span>
                 Never
-                <input
-                        type="range"
-                        name="rating"
-                        id="ratingID"
-                        step="1"
-                        min="1"
-                        max="10"
-                        value="5"
-                        class="form-range"
-                />
+                <input type="range" name="rating" id="ratingID" step="1" min="1" max="10" value="5" class="form-range"/>
                 <div class="small text-muted">Selected rating: <span id="ratingValue">5</span></div>
                 <div class="invalid-feedback d-block" id="ratingError"></div>
             </div>
@@ -116,7 +102,7 @@
             <div class="invalid-feedback d-block" id="agreedError"></div>
         </div>
 
-        <button type="submit" class="btn btn-primary" id="submitButton">Submit</button>
+        <button type="submit" class="btn btn-primary" id="submitButton" disabled>Submit</button>
     </form>
 </main>
 

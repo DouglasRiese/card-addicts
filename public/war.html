@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>War - Card Addicts</title>
+
+    <link rel="stylesheet" href="/styles/style.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.3/minty/bootstrap.min.css"
+          integrity="sha512-+/uDiVv4ZLhHnXToJFPwYK08kkG2et1rSuiitOl+0hdzmx2N6HQaMqm/7ORzr8dhco+cyGZCRxkXU7EMMYOLfQ=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet" href="/styles/war.css"/>
+    <link rel="icon" href="/images/icons/playing_cards.png"/>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light rounded-3">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+            <img src="/images/icons/playing_cards.png" height="50" alt="Card Addicts icon"/>
+            Card Addicts
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-item nav-link" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-item nav-link" href="/survey.html">Survey</a></li>
+                <li class="nav-item"><a class="nav-item nav-link disabled" href="#">Avatar</a></li>
+                <li class="nav-item"><a class="nav-item nav-link disabled" href="#">Recent Activity</a></li>
+                <li class="nav-item"><a class="nav-item nav-link" href="/login.html">Login</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main class="container py-4">
+    <h2>War</h2>
+
+    <div id="authRequiredMessage" class="alert alert-warning d-none">
+        You must be logged in to play War.
+        <a href="/login.html" class="alert-link">Go to login/signup</a>
+    </div>
+
+    <div id="currentUserMessage" class="alert alert-info d-none"></div>
+    <div id="warErrorMessage" class="alert alert-danger d-none"></div>
+
+    <section id="settingsSection" class="card shadow-sm p-4">
+        <h4>War Game Settings</h4>
+
+        <div class="mb-3">
+            <label class="form-label">Number of cards to capture for win:</label>
+            <div>
+                <input type="radio" class="btn-check" name="victoryConditions" id="victory5" value="5" checked>
+                <label class="btn btn-outline-primary me-2 mb-2" for="victory5">5</label>
+
+                <input type="radio" class="btn-check" name="victoryConditions" id="victory10" value="10">
+                <label class="btn btn-outline-primary me-2 mb-2" for="victory10">10</label>
+
+                <input type="radio" class="btn-check" name="victoryConditions" id="victory20" value="20">
+                <label class="btn btn-outline-primary me-2 mb-2" for="victory20">20</label>
+
+                <input type="radio" class="btn-check" name="victoryConditions" id="victory30" value="30">
+                <label class="btn btn-outline-primary me-2 mb-2" for="victory30">30</label>
+            </div>
+        </div>
+
+        <button id="startGameButton" class="btn btn-warning">Start Game</button>
+    </section>
+
+    <section id="gameSection" class="d-none">
+        <div class="d-flex gap-2 mb-3">
+            <button id="drawButton" class="btn btn-primary">Draw Card</button>
+            <button id="resetButton" class="btn btn-outline-danger">Reset Game</button>
+        </div>
+
+        <div class="alert alert-secondary" id="resultMessage">Start a game to begin.</div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm p-3 text-center">
+                    <h4>Computer</h4>
+                    <p class="mb-1">Captured cards: <span id="computerCapturesCount">0</span></p>
+                    <img id="computerCardImage" class="war-card mx-auto d-none" alt="Computer card" src="">
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow-sm p-3 text-center">
+                    <h4>Player</h4>
+                    <p class="mb-1">Captured cards: <span id="playerCapturesCount">0</span></p>
+                    <img id="playerCardImage" class="war-card mx-auto d-none" alt="Player card" src="">
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <p class="mb-1">Cards remaining: <span id="cardsRemaining">0</span></p>
+            <p class="mb-0">Victory target: <span id="victoryTarget">0</span></p>
+        </div>
+    </section>
+</main>
+
+<script src="/scripts/war.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</body>
+</html>
