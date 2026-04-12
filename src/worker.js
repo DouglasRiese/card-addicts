@@ -13,6 +13,10 @@ export default {
             return handleSurveySubmission(request, env);
         }
 
+        if (url.pathname === "/api/survey/submissions" && request.method === "GET") {
+            return handleGetSurveySubmissions(env, url);
+        }
+
         return env.ASSETS.fetch(request);
     }
 };
@@ -37,7 +41,7 @@ async function handleSurveySubmission(request, env) {
                 agreed: formData.get("agreed") === "yes"
             };
         } else {
-            return jsonResponse({error: "Unsupported content type."}, 415);
+            return jsonResponse({ error: "Unsupported content type." }, 415);
         }
 
         const cleanedPayload = {
@@ -51,12 +55,12 @@ async function handleSurveySubmission(request, env) {
         const errors = validateSurvey(cleanedPayload);
 
         if (Object.keys(errors).length > 0) {
-            return jsonResponse({errors}, 400);
+            return jsonResponse({ errors }, 400);
         }
 
         const ratingNumber = Number(cleanedPayload.rating);
 
-        const result = await env.card_addicts_db
+        const result = await env.DB
             .prepare(
                 `INSERT INTO survey_submissions
                      (email, feedback, rating, game_choice, agreed)
@@ -78,7 +82,38 @@ async function handleSurveySubmission(request, env) {
         });
     } catch (error) {
         console.error("Survey submission failed:", error);
-        return jsonResponse({error: "Invalid request body."}, 400);
+        return jsonResponse({ error: "Invalid request body." }, 400);
+    }
+}
+
+async function handleGetSurveySubmissions(env, url) {
+    try {
+        const limitParam = Number(url.searchParams.get("limit") || "20");
+        const limit = Number.isInteger(limitParam)
+            ? Math.min(Math.max(limitParam, 1), 100)
+            : 20;
+
+        const stmt = env.DB.prepare(`
+            SELECT id,
+                   email,
+                   feedback,
+                   rating,
+                   game_choice,
+                   agreed,
+                   submitted_at
+            FROM survey_submissions
+            ORDER BY id DESC LIMIT ?
+        `).bind(limit);
+
+        const result = await stmt.all();
+
+        return jsonResponse({
+            success: true,
+            submissions: result.results ?? []
+        });
+    } catch (error) {
+        console.error("Fetching submissions failed:", error);
+        return jsonResponse({ error: "Could not fetch survey submissions." }, 500);
     }
 }
 
@@ -117,7 +152,7 @@ function validateSurvey(payload) {
 }
 
 function jsonResponse(data, status = 200) {
-    return new Response(JSON.stringify(data), {
+    return new Response(JSON.stringify(data, null, 2), {
         status,
         headers: {
             "Content-Type": "application/json; charset=utf-8"

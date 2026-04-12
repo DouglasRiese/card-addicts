@@ -1,16 +1,28 @@
 {
-	"name": "card-addicts-home",
-	"main": "src/worker.js",
-	"compatibility_date": "2026-04-11",
-	"assets": {
-		"directory": "./public",
-		"binding": "ASSETS"
-	},
-	"d1_databases": [
-		{
-			"binding": "card_addicts_db",
-			"database_name": "card-addicts-db",
-			"database_id": "31156e0b-5463-4772-89fc-c7e2f466f1eb"
-		}
-	]
+  "name": "card-addicts",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-04-11",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+  "workers_dev": true,
+  "preview_urls": true,
+  "routes": [
+    {
+      "pattern": "card-addicts.douglasriese.ca",
+      "zone_name": "douglasriese.ca",
+      "custom_domain": true
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "card-addicts-db",
+      "database_id": "31156e0b-5463-4772-89fc-c7e2f466f1eb"
+    }
+  ],
+  "vars": {
+    "GOOGLE_CLIENT_ID": "809111617751-f35jraq7t2p8vhn56si532go4h6evoie.apps.googleusercontent.com"
+  }
 }
