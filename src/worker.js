@@ -8,7 +8,7 @@ export default {
         const url = new URL(request.url);
 
         if (url.pathname === "/") {
-            return env.ASSETS.fetch(new Request(new URL("/home.html", request.url), request));
+            return env.ASSETS.fetch(new Request(new URL("/games.html", request.url), request));
         }
 
         if (url.pathname === "/api/signup" && request.method === "POST") {
