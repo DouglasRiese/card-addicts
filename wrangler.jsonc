@@ -29,6 +29,7 @@
     }
   ],
   "vars": {
-    "GOOGLE_CLIENT_ID": "809111617751-f35jraq7t2p8vhn56si532go4h6evoie.apps.googleusercontent.com"
+    "GOOGLE_CLIENT_ID": "809111617751-f35jraq7t2p8vhn56si532go4h6evoie.apps.googleusercontent.com",
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAC_Epcdzhsbho-Dy"
   }
 }

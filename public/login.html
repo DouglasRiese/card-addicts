@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Auth - Card Addicts</title>
+    <title>Login - Card Addicts</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.3/minty/bootstrap.min.css"
           integrity="sha512-+/uDiVv4ZLhHnXToJFPwYK08kkG2et1rSuiitOl+0hdzmx2N6HQaMqm/7ORzr8dhco+cyGZCRxkXU7EMMYOLfQ=="
@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="/styles/login.css"/>
     <link rel="icon" href="/images/icons/playing_cards.png"/>
     <link rel="stylesheet" href="/styles/navbar.css" />
+
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light rounded-3">
@@ -65,6 +67,11 @@
                             <div class="invalid-feedback" id="signupPasswordError"></div>
                         </div>
 
+                        <div class="mb-3">
+                            <div class="cf-turnstile" data-sitekey="0x4AAAAAAC_Epcdzhsbho-Dy" data-theme="light"></div>
+                            <div class="text-danger mt-2" id="signupTurnstileError"></div>
+                        </div>
+
                         <button type="submit" class="btn btn-primary">Create Account</button>
                     </form>
                 </div>
@@ -86,6 +93,11 @@
                             <label for="loginPassword" class="form-label">Password</label>
                             <input type="password" id="loginPassword" class="form-control"/>
                             <div class="invalid-feedback" id="loginPasswordError"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="cf-turnstile" data-sitekey="0x4AAAAAAC_Epcdzhsbho-Dy" data-theme="light"></div>
+                            <div class="text-danger mt-2" id="loginTurnstileError"></div>
                         </div>
 
                         <button type="submit" class="btn btn-success">Log In</button>

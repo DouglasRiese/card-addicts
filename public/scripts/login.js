@@ -12,10 +12,11 @@ document.addEventListener("DOMContentLoaded", () => {
 signupForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     clearMessages();
-    clearFormErrors(["signupEmail", "signupPassword"]);
+    clearFormErrors("signup");
 
     const email = document.getElementById("signupEmail").value.trim();
     const password = document.getElementById("signupPassword").value;
+    const turnstileToken = getTurnstileToken(signupForm);
 
     const errors = validateAuthInput(email, password, "signup");
     if (Object.keys(errors).length > 0) {
@@ -29,7 +30,7 @@ signupForm.addEventListener("submit", async (event) => {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({email, password})
+            body: JSON.stringify({ email, password, turnstileToken })
         });
 
         const result = await response.json();
@@ -40,24 +41,31 @@ signupForm.addEventListener("submit", async (event) => {
             } else {
                 showError(result.error || "Could not sign up.");
             }
+
+            resetTurnstile(signupForm);
             return;
         }
 
         signupForm.reset();
+        clearFormErrors("signup");
+        resetTurnstile(signupForm);
+
         showSuccess(`Signed up as ${result.user.email}`);
         await loadCurrentUser();
     } catch {
         showError("Could not sign up.");
+        resetTurnstile(signupForm);
     }
 });
 
 loginForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     clearMessages();
-    clearFormErrors(["loginEmail", "loginPassword"]);
+    clearFormErrors("login");
 
     const email = document.getElementById("loginEmail").value.trim();
     const password = document.getElementById("loginPassword").value;
+    const turnstileToken = getTurnstileToken(loginForm);
 
     const errors = validateAuthInput(email, password, "login");
     if (Object.keys(errors).length > 0) {
@@ -71,7 +79,7 @@ loginForm.addEventListener("submit", async (event) => {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({email, password})
+            body: JSON.stringify({ email, password, turnstileToken })
         });
 
         const result = await response.json();
@@ -82,14 +90,20 @@ loginForm.addEventListener("submit", async (event) => {
             } else {
                 showError(result.error || "Could not log in.");
             }
+
+            resetTurnstile(loginForm);
             return;
         }
 
         loginForm.reset();
+        clearFormErrors("login");
+        resetTurnstile(loginForm);
+
         showSuccess(`Logged in as ${result.user.email}`);
         await loadCurrentUser();
     } catch {
         showError("Could not log in.");
+        resetTurnstile(loginForm);
     }
 });
 
@@ -127,12 +141,24 @@ function validateAuthInput(email, password, prefix) {
     return errors;
 }
 
+function getTurnstileToken(form) {
+    return form.querySelector('[name="cf-turnstile-response"]')?.value || "";
+}
+
 function showApiErrors(apiErrors, prefix) {
     if (apiErrors.email) {
         setFieldError(`${prefix}Email`, apiErrors.email);
     }
+
     if (apiErrors.password) {
         setFieldError(`${prefix}Password`, apiErrors.password);
+    }
+
+    if (apiErrors.turnstile) {
+        const turnstileError = document.getElementById(`${prefix}TurnstileError`);
+        if (turnstileError) {
+            turnstileError.textContent = apiErrors.turnstile;
+        }
     }
 }
 
@@ -149,12 +175,15 @@ function setFieldError(fieldId, message) {
     if (input) {
         input.classList.add("is-invalid");
     }
+
     if (feedback) {
         feedback.textContent = message;
     }
 }
 
-function clearFormErrors(fieldIds) {
+function clearFormErrors(prefix) {
+    const fieldIds = [`${prefix}Email`, `${prefix}Password`];
+
     for (const fieldId of fieldIds) {
         const input = document.getElementById(fieldId);
         const feedback = document.getElementById(`${fieldId}Error`);
@@ -162,9 +191,32 @@ function clearFormErrors(fieldIds) {
         if (input) {
             input.classList.remove("is-invalid");
         }
+
         if (feedback) {
             feedback.textContent = "";
         }
+    }
+
+    const turnstileError = document.getElementById(`${prefix}TurnstileError`);
+    if (turnstileError) {
+        turnstileError.textContent = "";
+    }
+}
+
+function resetTurnstile(form) {
+    if (!window.turnstile) {
+        return;
+    }
+
+    const widget = form.querySelector(".cf-turnstile");
+    if (!widget) {
+        return;
+    }
+
+    try {
+        window.turnstile.reset(widget);
+    } catch {
+        // ignore reset failures
     }
 }
 

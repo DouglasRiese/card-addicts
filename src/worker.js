@@ -80,6 +80,12 @@ async function handleSignup(request, env) {
         const body = await request.json();
         const email = String(body.email || "").trim().toLowerCase();
         const password = String(body.password || "");
+        const turnstileToken = String(body.turnstileToken || "");
+        const turnstileCheck = await validateTurnstileToken(turnstileToken, request, env);
+
+        if (!turnstileCheck.success) {
+            return jsonResponse({ errors: { turnstile: turnstileCheck.error } }, 400);
+        }
 
         const errors = validateAuthInput(email, password);
         if (Object.keys(errors).length > 0) {
@@ -117,6 +123,12 @@ async function handleLogin(request, env) {
         const body = await request.json();
         const email = String(body.email || "").trim().toLowerCase();
         const password = String(body.password || "");
+        const turnstileToken = String(body.turnstileToken || "");
+        const turnstileCheck = await validateTurnstileToken(turnstileToken, request, env);
+
+        if (!turnstileCheck.success) {
+            return jsonResponse({ errors: { turnstile: turnstileCheck.error } }, 400);
+        }
 
         const errors = validateAuthInput(email, password);
         if (Object.keys(errors).length > 0) {
@@ -777,6 +789,35 @@ function validateAuthInput(email, password) {
     }
 
     return errors;
+}
+
+async function validateTurnstileToken(token, request, env) {
+    if (!token) {
+        return { success: false, error: "Please complete the Turnstile check." };
+    }
+
+    const ip = request.headers.get("CF-Connecting-IP") || "";
+
+    const formData = new FormData();
+    formData.append("secret", env.TURNSTILE_SECRET_KEY);
+    formData.append("response", token);
+
+    if (ip) {
+        formData.append("remoteip", ip);
+    }
+
+    const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+        method: "POST",
+        body: formData
+    });
+
+    const result = await response.json();
+
+    if (!result.success) {
+        return { success: false, error: "Turnstile verification failed." };
+    }
+
+    return { success: true };
 }
 
 async function hashPassword(password) {

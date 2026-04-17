@@ -6,7 +6,7 @@ async function enhanceNavbar() {
     const navAuthSlot = document.getElementById("navAuthSlot");
     if (!navAuthSlot) return;
 
-    const loginLinks = Array.from(document.querySelectorAll('a[href="/auth.html"]'));
+    const loginLinks = Array.from(document.querySelectorAll('a[href="/login.html"]'));
 
     try {
         const meResponse = await fetch("/api/me");
@@ -52,7 +52,7 @@ async function enhanceNavbar() {
                </a>`
                 : ""
         }
-        <a href="/auth.html" class="text-decoration-none nav-user-email">
+        <a href="/login.html" class="text-decoration-none nav-user-email">
           ${escapeHtml(meResult.user.email)}
         </a>
         <button type="button" class="btn btn-outline-danger btn-sm nav-logout-btn" id="navLogoutButton">
